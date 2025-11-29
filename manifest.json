@@ -2,7 +2,7 @@
   "name": "Remember Names",
   "short_name": "RememberNames",
   "description": "Remember names and connections between people",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f7fafc",
   "theme_color": "#2d3748",

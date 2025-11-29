@@ -1,17 +1,17 @@
-const CACHE_NAME = "remember-names-v3";
+const CACHE_NAME = "remember-names-v4";
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/css/styles.css",
-  "/js/app.js",
-  "/js/db.js",
-  "/js/contacts.js",
-  "/js/connections.js",
-  "/js/network.js",
-  "/js/ui.js",
-  "/assets/icons/icon-192.svg",
-  "/assets/icons/icon-512.svg",
-  "/assets/placeholder.svg",
+  "./",
+  "./index.html",
+  "./css/styles.css",
+  "./js/app.js",
+  "./js/db.js",
+  "./js/contacts.js",
+  "./js/connections.js",
+  "./js/network.js",
+  "./js/ui.js",
+  "./assets/icons/icon-192.svg",
+  "./assets/icons/icon-512.svg",
+  "./assets/placeholder.svg",
   "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js",
   "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.wasm",
   "https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/vis-network.min.js",
@@ -85,7 +85,7 @@ self.addEventListener("fetch", (event) => {
       .catch(() => {
         // Return offline fallback if available
         if (event.request.destination === "document") {
-          return caches.match("/index.html");
+          return caches.match("./index.html");
         }
       })
   );
