@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Remember names and connections between people"
+    />
+    <meta name="theme-color" content="#2d3748" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg" />
+
+    <title>Remember Names</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <header class="header">
+        <h1>Remember Names</h1>
+        <div class="header-actions">
+          <div class="search-container">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search contacts..."
+              class="search-input"
+              autocomplete="off"
+            />
+            <div id="search-dropdown" class="search-dropdown hidden"></div>
+          </div>
+          <button id="btn-add-contact" class="btn btn-secondary">
+            + Add Contact
+          </button>
+          <button
+            id="btn-reset-layout"
+            class="btn btn-secondary"
+            title="Re-run physics simulation to reorganize nodes"
+          >
+            Reset Layout
+          </button>
+          <button id="btn-import-export" class="btn btn-secondary">
+            Import/Export
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main">
+        <!-- Network Graph -->
+        <div id="network-container" class="network-container"></div>
+
+        <!-- Sidebar for contact details -->
+        <aside id="sidebar" class="sidebar hidden">
+          <button id="sidebar-close" class="sidebar-close">&times;</button>
+          <div id="sidebar-content"></div>
+        </aside>
+      </main>
+
+      <!-- Add/Edit Contact Modal -->
+      <div id="modal-contact" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modal-contact-title">Add Contact</h2>
+            <button class="modal-close" data-modal="modal-contact">
+              &times;
+            </button>
+          </div>
+          <form id="form-contact">
+            <input type="hidden" id="contact-id" />
+
+            <div class="form-group">
+              <label for="contact-name">Name *</label>
+              <input type="text" id="contact-name" required />
+            </div>
+
+            <div class="form-group">
+              <label>Image</label>
+              <div class="image-input-tabs">
+                <button type="button" class="tab-btn active" data-tab="url">
+                  URL
+                </button>
+                <button type="button" class="tab-btn" data-tab="file">
+                  Upload
+                </button>
+              </div>
+              <div id="tab-url" class="tab-content active">
+                <input
+                  type="url"
+                  id="contact-image-url"
+                  placeholder="https://example.com/photo.jpg"
+                />
+              </div>
+              <div id="tab-file" class="tab-content hidden">
+                <input type="file" id="contact-image-file" accept="image/*" />
+                <div id="image-preview" class="image-preview"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-notes">Notes</label>
+              <textarea
+                id="contact-notes"
+                rows="3"
+                placeholder="Add notes about this person..."
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-modal="modal-contact"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save Contact
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add Connection Modal -->
+      <div id="modal-connection" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Add Connection</h2>
+            <button class="modal-close" data-modal="modal-connection">
+              &times;
+            </button>
+          </div>
+          <form id="form-connection">
+            <input type="hidden" id="connection-id" />
+            <input type="hidden" id="connection-from-id" />
+            <input type="hidden" id="connection-to-id" />
+
+            <div class="form-group">
+              <label for="connection-from">From Contact *</label>
+              <div class="search-container">
+                <input
+                  type="text"
+                  id="connection-from"
+                  class="search-input full-width"
+                  placeholder="Search for contact..."
+                  autocomplete="off"
+                  required
+                />
+                <div
+                  id="connection-from-dropdown"
+                  class="search-dropdown hidden"
+                ></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="connection-to">To Contact *</label>
+              <div class="search-container">
+                <input
+                  type="text"
+                  id="connection-to"
+                  class="search-input full-width"
+                  placeholder="Search for contact..."
+                  autocomplete="off"
+                  required
+                />
+                <div
+                  id="connection-to-dropdown"
+                  class="search-dropdown hidden"
+                ></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="connection-label">Relationship *</label>
+              <input
+                type="text"
+                id="connection-label"
+                required
+                placeholder="friend, colleague, family..."
+                list="relationship-suggestions"
+              />
+              <datalist id="relationship-suggestions">
+                <option value="friend"></option>
+                <option value="family"></option>
+                <option value="colleague"></option>
+                <option value="neighbor"></option>
+                <option value="classmate"></option>
+                <option value="partner"></option>
+                <option value="parent"></option>
+                <option value="child"></option>
+                <option value="sibling"></option>
+              </datalist>
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-modal="modal-connection"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save Connection
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Import/Export Modal -->
+      <div id="modal-import-export" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Import / Export Data</h2>
+            <button class="modal-close" data-modal="modal-import-export">
+              &times;
+            </button>
+          </div>
+          <div class="import-export-content">
+            <div class="export-section">
+              <h3>Export</h3>
+              <p>Download all your contacts and connections as a JSON file.</p>
+              <button id="btn-export" class="btn btn-primary">
+                Export Data
+              </button>
+            </div>
+            <hr />
+            <div class="import-section">
+              <h3>Import</h3>
+              <p>
+                Import contacts and connections from a JSON file. This will
+                merge with existing data.
+              </p>
+              <input type="file" id="import-file" accept=".json" />
+              <button id="btn-import" class="btn btn-primary" disabled>
+                Import Data
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Context Menu for Network -->
+      <div id="context-menu" class="context-menu hidden">
+        <button id="ctx-edit" class="context-menu-item">Edit</button>
+        <button id="ctx-add-connection" class="context-menu-item">
+          Add Connection
+        </button>
+        <button id="ctx-delete" class="context-menu-item danger">Delete</button>
+      </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading database...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      // Load dependencies before app
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+
+      async function loadDependencies() {
+        await loadScript(
+          "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"
+        );
+        await loadScript(
+          "https://cdnjs.cloudflare.com/ajax/libs/vis-network/10.0.2/standalone/umd/vis-network.min.js"
+        );
+        // Now load the app module
+        const appScript = document.createElement("script");
+        appScript.type = "module";
+        appScript.src = "js/app.js";
+        document.body.appendChild(appScript);
+      }
+
+      loadDependencies().catch((err) => {
+        console.error("Failed to load dependencies:", err);
+        document.getElementById("loading").innerHTML = `
+          <div style="text-align: center; color: #e53e3e;">
+            <h2>Failed to load dependencies</h2>
+            <p>Please check your internet connection and refresh.</p>
+          </div>
+        `;
+      });
+    </script>
+  </body>
+</html>
